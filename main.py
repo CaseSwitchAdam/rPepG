@@ -21,12 +21,19 @@ tileSize = 32
 im = Image.open("tileMap.bmp")
 bitMap = im.load()
 
+xTiles = int(res[0]/tileSize)
+yTiles = int(res[1]/tileSize)
+
+class cameraPosition:
+    def __init__(self, initX, initY):
+        self.xView = initX
+        self.yView = initY
+
 while True:
-    windowObj.fill(greyColor)
     fpsDisplayObj = fontObj.render("%i" % (fpsClock.get_fps()), False, purpleColor)
     
-    for x in range(0, res[0]/tileSize):
-        for y in range(0, res[1]/tileSize):
+    for x in range(0, xTiles):
+        for y in range(0, yTiles):
             if bitMap[x, y] == 113:
                 pygame.draw.rect(windowObj, whiteColor, (x*tileSize, y*tileSize, tileSize, tileSize), 0)
             elif bitMap[x, y] == 0:
