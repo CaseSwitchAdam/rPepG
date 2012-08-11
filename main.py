@@ -31,7 +31,6 @@ tileSurfaceArray = []
 for x in range(0, 256):
     column = x % tileArrayWidth
     row = int(x / tileArrayWidth)
-    print column * tileSize,column * tileSize + tileSize, row * tileSize, row * tileSize + tileSize
     tileSurfaceArray.append(pygame.surfarray.make_surface(tileArray[column * tileSize:column * tileSize + tileSize, row * tileSize: row * tileSize + tileSize]))
     
 del tileArray
