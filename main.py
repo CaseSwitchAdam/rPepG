@@ -6,45 +6,44 @@ pygame.init()
 fpsClock = pygame.time.Clock()
 
 tileSize = 32
-res = 16, 16
+tileRes = 8, 8
+res = tileRes[0] * tileSize, tileRes[1] * tileSize
 
 greyColor = pygame.Color(127, 127, 127)
 orangeColor = pygame.Color(255, 127, 0)
 purpleColor = pygame.Color(127, 0, 127)
 whiteColor = pygame.Color(255, 255, 255)
 blackColor = pygame.Color(0, 0, 0)
-windowObj = pygame.display.set_mode((res[0] * tileSize, res[1] * tileSize))
+windowObj = pygame.display.set_mode(res)
 pygame.display.set_caption("rPepG")
 
 fontObj = pygame.font.Font('freesansbold.ttf', 16)
 
 tiles = pygame.image.load("tiles32.png")
 map = pygame.image.load("tileMap.bmp")
-tileArray = pygame.surfarray.pixels2d(tiles)
-#mapArray = pygame.surfarray.array2d(tileMap) #This is the original version that makes a separate array, independent of the original surface
-mapArray = pygame.surfarray.pixels2d(map) #This method locks the surface and also cannot use 24-bit data
-#However, it is much much faster because the array references to the original Surface. Therefore if you change the array, you change the surface
+tileArray = pygame.surfarray.pixels3d(tiles)
+mapArray = pygame.surfarray.array2d(map)
+#See www.pygame.org/docs/ref/surfarray.html for more information.
 
-tileArrayWidth = len(tileArray)/tileSize
 tileSurfaceArray = []
+del map
 
 for x in range(0, 256):
-    column = x % tileArrayWidth
-    row = int(x / tileArrayWidth)
+    column = x % (len(tileArray)/tileSize)
+    row = int(x / (len(tileArray)/tileSize))
     tileSurfaceArray.append(pygame.surfarray.make_surface(tileArray[column * tileSize:column * tileSize + tileSize, row * tileSize: row * tileSize + tileSize]))
-    
-del tileArray
-print len(tileSurfaceArray)
+
+print "tileSurfaceArray length:", len(tileSurfaceArray)
 
 while True:
-    windowObj.fill(greyColor)
     fpsDisplayObj = fontObj.render("%i" % (fpsClock.get_fps()), False, purpleColor)
     
-    for x in range(0, res[0]):
-        for y in range(0, res[1]):
-            windowObj.blit(tileSurfaceArray[mapArray[x][y]], (x * tileSize, y * tileSize))
+    for x in range(0, res[0], tileSize):
+        for y in range(0, res[1], tileSize):
+            windowObj.blit(tileSurfaceArray[mapArray[x / tileSize][y / tileSize]], (x, y))
 
     windowObj.blit(fpsDisplayObj, (0, 0))
+    
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
