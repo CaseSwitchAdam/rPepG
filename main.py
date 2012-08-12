@@ -6,7 +6,7 @@ pygame.init()
 fpsClock = pygame.time.Clock()
 
 tileSize = 32
-tileRes = 8, 8
+tileRes = 16, 16
 res = tileRes[0] * tileSize, tileRes[1] * tileSize
 
 greyColor = pygame.Color(127, 127, 127)
