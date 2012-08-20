@@ -20,7 +20,7 @@ pygame.display.set_caption("rPepG")
 fontObj = pygame.font.Font('freesansbold.ttf', 16)
 
 tiles = pygame.image.load("tiles32.png")
-map = pygame.image.load("tileMap.bmp")
+map = pygame.image.load("tileMap.png")
 tileArray = pygame.surfarray.pixels3d(tiles)
 mapArray = pygame.surfarray.array2d(map)
 #See www.pygame.org/docs/ref/surfarray.html for more information.
