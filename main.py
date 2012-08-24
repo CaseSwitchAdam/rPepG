@@ -27,6 +27,7 @@ mapArray = pygame.surfarray.array2d(map)
 
 tileSurfaceArray = []
 del map
+cameraPos = (17, 17)
 
 for x in range(0, 256):
     column = x % (len(tileArray)/tileSize)
@@ -38,8 +39,8 @@ print "tileSurfaceArray length:", len(tileSurfaceArray)
 while True:
     fpsDisplayObj = fontObj.render("%i" % (fpsClock.get_fps()), False, purpleColor)
     
-    for x in range(0, res[0], tileSize):
-        for y in range(0, res[1], tileSize):
+    for x in range(-(cameraPos[0] % tileSize), res[0], tileSize):
+        for y in range(-(cameraPos[1] % tileSize), res[1], tileSize):
             windowObj.blit(tileSurfaceArray[mapArray[x / tileSize][y / tileSize]], (x, y))
 
     windowObj.blit(fpsDisplayObj, (0, 0))
