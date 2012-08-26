@@ -6,7 +6,7 @@ pygame.init()
 fpsClock = pygame.time.Clock()
 
 tileSize = 32
-tileRes = 16, 16
+tileRes = 30, 15
 res = tileRes[0] * tileSize, tileRes[1] * tileSize
 
 greyColor = pygame.Color(127, 127, 127)
@@ -28,7 +28,7 @@ mapArray = pygame.surfarray.array2d(map)
 tileSurfaceArray = []
 del map
 
-class camera:
+class Camera:
     def __init__(self, xPos, yPos):
         self.xCoord = xPos
         self.yCoord = yPos
@@ -36,6 +36,7 @@ class camera:
         self.yTile = yPos / tileSize
         self.offsetX = self.xCoord % tileSize
         self.offsetY = self.yCoord % tileSize
+        
     def updatePos(self, xPos, yPos):
         self.xCoord = xPos
         self.yCoord = yPos
@@ -43,7 +44,64 @@ class camera:
         self.yTile = yPos / tileSize
         self.offsetX = self.xCoord % tileSize
         self.offsetY = self.yCoord % tileSize
-
+        
+        
+class Entity:
+    def __init__(self, xPos, yPos, xSize, ySize, tangible):
+        self.xCoord = xPos
+        self.yCoord = yPos
+        self.xSize = xSize
+        self.ySize = ySize
+        self.xTile = xPos / tileSize
+        self.yTile = yPos / tileSize
+        self.tangible = tangible
+        
+    def updatePos(self, xPos, yPos):
+        self.xCoord = xPos
+        self.yCoord = yPos
+        self.xTile = xPos / tileSize
+        self.yTile = yPos / tileSize
+        
+    def checkXAlign(self):
+        if self.xCoord % tileSize:
+            return True
+        else:
+            return False
+            
+    def checkYAlign(self):
+        if self.yCoord % tileSize:
+            return True
+        else:
+            return False
+        
+        
+class Character(Entity):
+    def __init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, tangible):
+        Entity.__init__(self, xPos, yPos, xSize, ySize, tangible)
+        self.hp = health
+        self.mp = mana
+        self.lvl = level
+        self.direction = direction
+        self.speed = speed
+        
+    xShift = 0
+    yShift = 0
+    
+    def shift(self):
+        #Alright, so you must make this shift by the speed per frame and also restrict to orthagonal movement.
+        #If 0 < tileSize - Coordinate % tileSize <= speed: then snap to next grid.
+        #YOU CAN DO THIS!
+        
+class Player(Character):
+    def __init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, tangible):
+        Character.__init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, tangible)
+        
+        
+class Monster(Character):
+    def __init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, tangible):
+        Character.__init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, tangible)
+        
+    
 for x in range(0, 256):
     column = x % (len(tileArray)/tileSize)
     row = x / (len(tileArray)/tileSize)
@@ -51,41 +109,57 @@ for x in range(0, 256):
 
 print "tileSurfaceArray length:", len(tileSurfaceArray)
 
-camera = camera(0, 0)
+camera = Camera(0, 0)
 
-#There is an issue with the tiles shifting incorrectly. FIX THIS NOW!
+monster = Monster(10, 10, 5, 4, 0, 128, 128, 32, 32, 1)
+player = Player(20, 20, 10, 4, 0, 256, 256, 32, 32, 1)
 
 while True:
     fpsDisplayObj = fontObj.render("%i" % (fpsClock.get_fps()), False, purpleColor)
-    camXDisplayObj = fontObj.render("%r" % (camera.xCoord), False, whiteColor)
-    camYDisplayObj = fontObj.render("%r" % (camera.yCoord), False, whiteColor)
-    camTileXDisplayObj = fontObj.render("%r" % (camera.xTile), False, whiteColor)
-    camTileYDisplayObj = fontObj.render("%r" % (camera.yTile), False, whiteColor)
+    camDisplayObj = fontObj.render("%r, %r" % ((player.xCoord), (player.yCoord)), False, whiteColor)
+    camTileXDisplayObj = fontObj.render("%r, %r" % ((player.xTile), (player.yTile)), False, whiteColor)
+    camTileXDisplayObj = fontObj.render("%r, %r" % ((player.xTile), (player.yTile)), False, whiteColor)
+
+    player.shift()
+    camera.updatePos(player.xCoord - res[0] / 2 + player.xSize / 2, player.yCoord - res[1] / 2 + player.ySize / 2)
     
     for x in range(-camera.offsetX, res[0], tileSize):
         for y in range(-camera.offsetY, res[1], tileSize):
             windowObj.blit(tileSurfaceArray[mapArray[((x + camera.offsetX) / tileSize) + camera.xTile][((y + camera.offsetY) / tileSize) + camera.yTile]], (x, y))
-
+            
+    pygame.draw.rect(windowObj, whiteColor, (player.xCoord - camera.xCoord, player.yCoord - camera.yCoord, player.xSize, player.ySize))
+    
+    if monster.xCoord in range(camera.xCoord, camera.xCoord + res[0]) and monster.yCoord in range(camera.yCoord, camera.yCoord + res[1]):
+        pygame.draw.rect(windowObj, blackColor, (monster.xCoord - camera.xCoord, monster.yCoord - camera.yCoord, monster.xSize, monster.ySize))
+    
     windowObj.blit(fpsDisplayObj, (0, 0))
-    windowObj.blit(camXDisplayObj, (0, 16))
-    windowObj.blit(camYDisplayObj, (32, 16))
+    windowObj.blit(camDisplayObj, (0, 16))
     windowObj.blit(camTileXDisplayObj, (0, 32))
-    windowObj.blit(camTileYDisplayObj, (32, 32))
     
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+            
+        elif event.type == KEYUP:
+            if event.key == K_DOWN:
+                player.yShift -= player.speed
+            if event.key == K_UP:
+                player.yShift += player.speed
+            if event.key == K_LEFT:
+                player.xShift -= player.speed
+            if event.key == K_RIGHT:
+                player.xShift += player.speed
         
         elif event.type == KEYDOWN:
             if event.key == K_DOWN:
-                camera.updatePos(camera.xCoord, camera.yCoord + 8)
+                player.yShift += player.speed
             if event.key == K_UP:
-                camera.updatePos(camera.xCoord, camera.yCoord - 8)
+                player.yShift -= player.speed
             if event.key == K_LEFT:
-                camera.updatePos(camera.xCoord - 8, camera.yCoord)
+                player.xShift += player.speed
             if event.key == K_RIGHT:
-                camera.updatePos(camera.xCoord + 8, camera.yCoord)
+                player.xShift -= player.speed
             
     pygame.display.update()
     fpsClock.tick(60)
