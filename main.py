@@ -99,66 +99,36 @@ class Character(Entity):
     yShift = 0
     
     def shift(self):
-        if self.xVelocity == self.yVelocity == 0:
-            if self.xShift == -1:
-                if 0 < self.offsetX <= self.speed:
-                    self.updateXPos(self.xCoord - self.offsetX)
-                    self.xShift = 0
-                else:
-                    self.updateXPos(self.xCoord - self.speed)
-            elif self.xShift == 1:
-                if 0 < (tileSize - self.offsetX) <= self.speed:
-                    self.updateXPos(self.xCoord + (tileSize - self.offsetX))
-                    self.xShift = 0
-                else:
-                    self.updateXPos(self.xCoord + self.speed)
-            elif self.yShift == -1:
-                if 0 < self.offsetY <= self.speed:
-                    self.updateYPos(self.yCoord - self.offsetY)
-                    self.yShift = 0
-                else:
-                    self.updateYPos(self.yCoord - self.speed)
-            elif self.yShift == 1:
-                if 0 < (tileSize - self.offsetY) <= self.speed:
-                    self.updateYPos(self.yCoord + (tileSize - self.offsetY))
-                    self.yShift = 0
-                else:
-                    self.updateYPos(self.yCoord + self.speed)
-        elif self.xVelocity != 0:
-            if self.xShift == 0:
-                self.xShift = math.copysign(1, self.xVelocity)
-                self.updateXPos(self.xVelocity + self.xCoord)
+        if self.xShift == 0 and self.xVelocity != 0:
+            self.xShift = math.copysign(1, self.xVelocity)
+            self.updateXPos(self.xVelocity + self.xCoord)
+        elif self.xShift == -1:
+            if 0 < self.offsetX <= self.speed:
+                self.updateXPos(self.xCoord - self.offsetX)
+                self.xShift = 0
             else:
-                if self.xShift == -1:
-                    if 0 < self.offsetX <= self.speed:
-                        self.updateXPos(self.xCoord - self.offsetX)
-                        self.xShift = 0
-                    else:
-                        self.updateXPos(self.xCoord - self.speed)
-                elif self.xShift == 1:
-                    if 0 < (tileSize - self.offsetX) <= self.speed:
-                        self.updateXPos(self.xCoord + (tileSize - self.offsetX))
-                        self.xShift = 0
-                    else:
-                        self.updateXPos(self.xCoord + self.speed)
-                        
-        elif self.yVelocity != 0:
-            if self.yShift == 0:
-                self.yShift = math.copysign(1, self.yVelocity)
-                self.updateYPos(self.yVelocity + self.yCoord)
+                self.updateXPos(self.xCoord - self.speed)
+        elif self.xShift == 1:
+            if 0 < (tileSize - self.offsetX) <= self.speed:
+                self.updateXPos(self.xCoord + (tileSize - self.offsetX))
+                self.xShift = 0
             else:
-                if self.yShift == -1:
-                    if 0 < self.offsetY <= self.speed:
-                        self.updateYPos(self.yCoord - self.offsetY)
-                        self.yShift = 0
-                    else:
-                        self.updateYPos(self.yCoord - self.speed)
-                elif self.yShift == 1:
-                    if 0 < (tileSize - self.offsetY) <= self.speed:
-                        self.updateYPos(self.yCoord + (tileSize - self.offsetY))
-                        self.yShift = 0
-                    else:
-                        self.updateYPos(self.yCoord + self.speed)
+                self.updateXPos(self.xCoord + self.speed)
+        elif self.yShift == 0 and self.yVelocity != 0:
+            self.yShift = math.copysign(1, self.yVelocity)
+            self.updateYPos(self.yVelocity + self.yCoord)
+        elif self.yShift == -1:
+            if 0 < self.offsetY <= self.speed:
+                self.updateYPos(self.yCoord - self.offsetY)
+                self.yShift = 0
+            else:
+                self.updateYPos(self.yCoord - self.speed)
+        elif self.yShift == 1:
+            if 0 < (tileSize - self.offsetY) <= self.speed:
+                self.updateYPos(self.yCoord + (tileSize - self.offsetY))
+                self.yShift = 0
+            else:
+                self.updateYPos(self.yCoord + self.speed)
         
 class Player(Character):
     def __init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, tangible):
