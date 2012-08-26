@@ -99,7 +99,7 @@ class Character(Entity):
     yShift = 0
     
     def shift(self):
-        if self.xShift == 0 and self.xVelocity != 0:
+        if self.xShift == 0 and self.xVelocity != 0 and self.yShift == 0:
             self.xShift = math.copysign(1, self.xVelocity)
             self.updateXPos(self.xVelocity + self.xCoord)
         elif self.xShift == -1:
@@ -114,7 +114,7 @@ class Character(Entity):
                 self.xShift = 0
             else:
                 self.updateXPos(self.xCoord + self.speed)
-        elif self.yShift == 0 and self.yVelocity != 0:
+        elif self.yShift == 0 and self.yVelocity != 0 and self.xShift == 0:
             self.yShift = math.copysign(1, self.yVelocity)
             self.updateYPos(self.yVelocity + self.yCoord)
         elif self.yShift == -1:
