@@ -6,7 +6,7 @@ pygame.init()
 fpsClock = pygame.time.Clock()
 
 tileSize = 32
-tileRes = 30, 15
+tileRes = 20, 15
 res = tileRes[0] * tileSize, tileRes[1] * tileSize
 
 greyColor = pygame.Color(127, 127, 127)
@@ -99,31 +99,31 @@ class Character(Entity):
     yShift = 0
     
     def shift(self):
-        if self.xShift == 0 and self.xVelocity != 0 and self.yShift == 0:
+        if self.xShift == 0 and self.xVelocity != 0 and self.yShift == 0: #Initial X Movement
             self.xShift = math.copysign(1, self.xVelocity)
             self.updateXPos(self.xVelocity + self.xCoord)
-        elif self.xShift == -1:
-            if 0 < self.offsetX <= self.speed:
+        elif self.xShift == -1: #Left Snap
+            if 0 <= self.offsetX <= self.speed:
                 self.updateXPos(self.xCoord - self.offsetX)
                 self.xShift = 0
             else:
                 self.updateXPos(self.xCoord - self.speed)
-        elif self.xShift == 1:
+        elif self.xShift == 1: #Right Snap
             if 0 < (tileSize - self.offsetX) <= self.speed:
                 self.updateXPos(self.xCoord + (tileSize - self.offsetX))
                 self.xShift = 0
             else:
                 self.updateXPos(self.xCoord + self.speed)
-        elif self.yShift == 0 and self.yVelocity != 0 and self.xShift == 0:
+        elif self.yShift == 0 and self.yVelocity != 0 and self.xShift == 0: #Initial Y Movement
             self.yShift = math.copysign(1, self.yVelocity)
             self.updateYPos(self.yVelocity + self.yCoord)
-        elif self.yShift == -1:
-            if 0 < self.offsetY <= self.speed:
+        elif self.yShift == -1: #Up Snap
+            if 0 <= self.offsetY <= self.speed:
                 self.updateYPos(self.yCoord - self.offsetY)
                 self.yShift = 0
             else:
                 self.updateYPos(self.yCoord - self.speed)
-        elif self.yShift == 1:
+        elif self.yShift == 1: #Down Snap
             if 0 < (tileSize - self.offsetY) <= self.speed:
                 self.updateYPos(self.yCoord + (tileSize - self.offsetY))
                 self.yShift = 0
@@ -150,7 +150,7 @@ print "tileSurfaceArray length:", len(tileSurfaceArray)
 camera = Camera(0, 0)
 
 monster = Monster(10, 10, 5, 4, 0, 128, 128, 32, 32, 1)
-player = Player(20, 20, 10, 1, 0, 256, 256, 32, 32, 1)
+player = Player(20, 20, 10, 3, 0, 256, 256, 32, 32, 1)
 
 while True:
     fpsDisplayObj = fontObj.render("%i" % (fpsClock.get_fps()), False, purpleColor)
