@@ -1,4 +1,4 @@
-import pygame, sys, random, time, math
+import pygame, sys, random, time, math, random
 from pygame.locals import *
 #Numpy also needs to be installed
 
@@ -47,7 +47,7 @@ class Camera:
         
         
 class Entity:
-    def __init__(self, xPos, yPos, xSize, ySize, tangible):
+    def __init__(self, xPos, yPos, xSize, ySize, collision):
         self.xCoord = xPos
         self.yCoord = yPos
         self.xSize = xSize
@@ -56,7 +56,7 @@ class Entity:
         self.yTile = yPos / tileSize
         self.offsetX = self.xCoord % tileSize
         self.offsetY = self.yCoord % tileSize
-        self.tangible = tangible
+        self.coll = collision
         
     def updateXPos(self, xPos):
         self.xCoord = xPos
@@ -87,8 +87,8 @@ class Entity:
         
         
 class Character(Entity):
-    def __init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, tangible):
-        Entity.__init__(self, xPos, yPos, xSize, ySize, tangible)
+    def __init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, collision):
+        Entity.__init__(self, xPos, yPos, xSize, ySize, collision)
         self.hp = health
         self.mp = mana
         self.lvl = level
@@ -129,15 +129,21 @@ class Character(Entity):
                 self.yShift = 0
             else:
                 self.updateYPos(self.yCoord + self.speed)
+                
+
+class Stats:
+    def __init__(self, (strength, dexterity, constitution, intelligence, wisdom, charisma), defense):
+        self.str = strength
+        self.dex = dexterity
+        self.con = constitution
+        self.int = intelligence
+        self.wis = wisdom
+        self.cha = charisma
+        self.dfs = defense
         
-class Player(Character):
-    def __init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, tangible):
-        Character.__init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, tangible)
-        
-        
-class Monster(Character):
-    def __init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, tangible):
-        Character.__init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, tangible)
+class Player(Character, Stats):
+    def __init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, coll):
+        Character.__init__(self, health, mana, level, speed, direction, xPos, yPos, xSize, ySize, coll)
         
     
 for x in range(0, 256):
@@ -149,8 +155,7 @@ print "tileSurfaceArray length:", len(tileSurfaceArray)
 
 camera = Camera(0, 0)
 
-monster = Monster(10, 10, 5, 4, 0, 128, 128, 32, 32, 1)
-player = Player(20, 20, 10, 3, 0, 256, 256, 32, 32, 1)
+player = Player(20, 20, 10, 6, 0, 256, 256, 32, 32, 1)
 
 while True:
     fpsDisplayObj = fontObj.render("%i" % (fpsClock.get_fps()), False, purpleColor)
@@ -165,9 +170,6 @@ while True:
             windowObj.blit(tileSurfaceArray[mapArray[((x + camera.offsetX) / tileSize) + camera.xTile][((y + camera.offsetY) / tileSize) + camera.yTile]], (x, y))
             
     pygame.draw.rect(windowObj, whiteColor, (player.xCoord - camera.xCoord, player.yCoord - camera.yCoord, player.xSize, player.ySize))
-    
-    if monster.xCoord in range(camera.xCoord - monster.xSize, camera.xCoord + res[0]) and monster.yCoord in range(camera.yCoord - monster.ySize, camera.yCoord + res[1]):
-        pygame.draw.rect(windowObj, blackColor, (monster.xCoord - camera.xCoord, monster.yCoord - camera.yCoord, monster.xSize, monster.ySize))
     
     windowObj.blit(fpsDisplayObj, (0, 0))
     windowObj.blit(posDisplayObj, (0, 16))
