@@ -1,4 +1,4 @@
-import pygame, sys, random, time, math, random
+import pygame, sys, random, time, math, random, UI
 from pygame.locals import *
 #Numpy also needs to be installed
 
@@ -16,6 +16,9 @@ whiteColor = pygame.Color(255, 255, 255)
 blackColor = pygame.Color(0, 0, 0)
 windowObj = pygame.display.set_mode(res)
 pygame.display.set_caption("rPepG")
+
+#This is used at the bottom of the code in the line with UI.drawInfo
+char = pygame.image.load("info/monster_NT.png")
 
 fontObj = pygame.font.Font('freesansbold.ttf', 16)
 
@@ -199,6 +202,9 @@ while True:
                 player.xVelocity -= player.speed
             elif event.key == K_RIGHT:
                 player.xVelocity += player.speed
-            
+                
+    UI.render(25, 25, 10, 10, "Pinksquare Hills", "Pre-alpha")
+    UI.drawInfo(char, 78, 100, 24, 28)
+    
     pygame.display.update()
     fpsClock.tick(60)
